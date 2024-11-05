@@ -23,8 +23,8 @@ func NewDockerGateway(cfg *Config) (*DockerGateway, error) {
 func (n *DockerGateway) Start() error {
 	fmt.Printf("Starting gateway with config: \n%s\n\n", litter.Sdump(*n.cfg))
 
+	// Define arguments to pass to the wallet_extension_linux binary
 	cmds := []string{
-		"ego", "run", "/home/ten/go-ten/tools/walletextension/main/main",
 		"--host", "0.0.0.0",
 		"--port", fmt.Sprintf("%d", n.cfg.gatewayHTTPPort),
 		"--portWS", fmt.Sprintf("%d", n.cfg.gatewayWSPort),
@@ -36,7 +36,15 @@ func (n *DockerGateway) Start() error {
 		"--rateLimitUserComputeTime", fmt.Sprintf("%d", n.cfg.rateLimitUserComputeTime),
 	}
 
-	_, err := docker.StartNewContainer("gateway", n.cfg.dockerImage, cmds, []int{n.cfg.gatewayHTTPPort, n.cfg.gatewayWSPort}, nil, nil, nil, true)
+	// Start the Docker container with the updated command and port mappings
+	_, err := docker.StartNewContainer(
+		"gateway",
+		n.cfg.dockerImage,
+		cmds,
+		[]int{n.cfg.gatewayHTTPPort, n.cfg.gatewayWSPort}, // Map required ports
+		nil, nil, nil,
+		true, // Automatically remove container on exit
+	)
 	return err
 }
 
