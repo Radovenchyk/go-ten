@@ -25,6 +25,7 @@ func (n *DockerGateway) Start() error {
 
 	// Define arguments to pass to the wallet_extension_linux binary
 	cmds := []string{
+		"/home/ten/go-ten/tools/walletextension/bin/wallet_extension_linux",
 		"--host", "0.0.0.0",
 		"--port", fmt.Sprintf("%d", n.cfg.gatewayHTTPPort),
 		"--portWS", fmt.Sprintf("%d", n.cfg.gatewayWSPort),
