@@ -24,19 +24,42 @@ func (n *DockerGateway) Start() error {
 	fmt.Printf("Starting gateway with config: \n%s\n\n", litter.Sdump(*n.cfg))
 
 	cmds := []string{
-		"/home/obscuro/go-obscuro/tools/walletextension/bin/wallet_extension_linux",
-		"--host", "0.0.0.0",
-		"--port", fmt.Sprintf("%d", n.cfg.gatewayHTTPPort),
-		"--portWS", fmt.Sprintf("%d", n.cfg.gatewayWSPort),
-		"--nodePortHTTP", fmt.Sprintf("%d", n.cfg.tenNodeHTTPPort),
-		"--nodePortWS", fmt.Sprintf("%d", n.cfg.tenNodeWSPort),
-		"--nodeHost", n.cfg.tenNodeHost,
-		"--dbType", "sqlite",
-		"--logPath", "sys_out",
-		"--rateLimitUserComputeTime", fmt.Sprintf("%d", n.cfg.rateLimitUserComputeTime),
+		"ego",
+		"run",
+		"/home/ten/go-ten/tools/walletextension/main/main",
+		fmt.Sprintf("-host=%s", "0.0.0.0"),
+		fmt.Sprintf("-port=%d", n.cfg.gatewayHTTPPort),
+		fmt.Sprintf("-portWS=%d", n.cfg.gatewayWSPort),
+		fmt.Sprintf("-nodePortHTTP=%d", n.cfg.tenNodeHTTPPort),
+		fmt.Sprintf("-nodePortWS=%d", n.cfg.tenNodeWSPort),
+		fmt.Sprintf("-nodeHost=%s", n.cfg.tenNodeHost),
+		"-dbType=sqlite",
+		"-logPath=gateway_logs.log",
+		fmt.Sprintf("-rateLimitUserComputeTime=%d", n.cfg.rateLimitUserComputeTime),
 	}
 
-	_, err := docker.StartNewContainer("gateway", n.cfg.dockerImage, cmds, []int{n.cfg.gatewayHTTPPort, n.cfg.gatewayWSPort}, nil, nil, nil, true)
+	// Set environment variables as map[string]string
+	envs := map[string]string{
+		"OE_SIMULATION": "1", // Set to "0" if not in simulation mode
+	}
+
+	// Map required devices as map[string]string
+	devices := map[string]string{}
+
+	// No volume mappings
+	volumes := map[string]string{}
+
+	// Start the Docker container with updated settings
+	_, err := docker.StartNewContainer(
+		"gateway",
+		n.cfg.dockerImage,
+		cmds,
+		[]int{n.cfg.gatewayHTTPPort, n.cfg.gatewayWSPort},
+		envs,
+		devices,
+		volumes,
+		true, // autoRestart
+	)
 	return err
 }
 

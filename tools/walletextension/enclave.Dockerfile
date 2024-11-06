@@ -43,9 +43,11 @@ RUN ego sign enclave.json
 # Trigger a new build stage and use the smaller ego version:
 FROM ghcr.io/edgelesssys/ego-deploy:v1.5.3
 
+
 # Copy just the binary for the enclave into this build stage
 COPY --from=build-enclave \
     /home/ten/go-ten/tools/walletextension/main /home/ten/go-ten/tools/walletextension/main
+
 
 WORKDIR /home/ten/go-ten/tools/walletextension/main
 
