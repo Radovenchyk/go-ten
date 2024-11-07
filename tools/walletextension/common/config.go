@@ -19,5 +19,5 @@ type Config struct {
 	RateLimitUserComputeTime       time.Duration
 	RateLimitWindow                time.Duration
 	RateLimitMaxConcurrentRequests int
-	Debug                          bool
+	InsideEnclave                  bool // Indicates if the program is running inside an enclave
 }
